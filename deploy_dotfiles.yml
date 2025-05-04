@@ -1,0 +1,39 @@
+---
+- name: Deploy dotfiles to all nodes for both users
+  hosts: all_nodes
+  become: yes
+  vars:
+    users:
+      - pbh
+      - zan
+
+  tasks:
+    - name: Copy .bashrc for each user
+      copy:
+        src: files/.bashrc
+        dest: "/home/{{ item }}/.bashrc"
+        owner: "{{ item }}"
+        group: "{{ item }}"
+        mode: '0644'
+        backup: yes
+      loop: "{{ users }}"
+
+    - name: Copy .vimrc for each user
+      copy:
+        src: files/.vimrc
+        dest: "/home/{{ item }}/.vimrc"
+        owner: "{{ item }}"
+        group: "{{ item }}"
+        mode: '0644'
+        backup: yes
+      loop: "{{ users }}"
+
+    - name: Copy .tmux.conf for each user
+      copy:
+        src: files/.tmux.conf
+        dest: "/home/{{ item }}/.tmux.conf"
+        owner: "{{ item }}"
+        group: "{{ item }}"
+        mode: '0644'
+        backup: yes
+      loop: "{{ users }}"

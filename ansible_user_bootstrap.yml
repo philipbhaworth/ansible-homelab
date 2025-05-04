@@ -1,0 +1,26 @@
+---
+- name: Bootstrap a new server for Ansible
+  hosts: all_nodes
+  become: yes
+  vars:
+    ansible_user_name: ansible
+    ansible_ssh_pubkey: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  tasks:
+    - name: Create ansible user
+      user:
+        name: "{{ ansible_user_name }}"
+        shell: /bin/bash
+        state: present
+        create_home: yes
+
+    - name: Add SSH key
+      authorized_key:
+        user: "{{ ansible_user_name }}"
+        state: present
+        key: "{{ ansible_ssh_pubkey }}"
+
+    - name: Allow ansible user passwordless sudo
+      copy:
+        dest: /etc/sudoers.d/{{ ansible_user_name }}
+        content: "{{ ansible_user_name }} ALL=(ALL) NOPASSWD: ALL\n"
+        mode: '0440'
