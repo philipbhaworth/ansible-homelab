@@ -1,0 +1,32 @@
+---
+# dotfiles_utility.yml
+#
+# Deploys minimal dotfiles to utility/worker nodes
+# Contains streamlined configuration for maintenance tasks
+
+- name: Deploy utility dotfiles to worker nodes
+  hosts: k8_dev_nodes:k8_prod_nodes
+  become: yes
+  vars:
+    users:
+      - pbh
+      - ansible
+  tasks:
+    - name: Find all dotfiles in utility directory
+      find:
+        paths: "{{ playbook_dir }}/files/utility"
+        patterns: ".*"
+        hidden: yes
+      register: dotfiles_found
+      delegate_to: localhost
+      become: no
+
+    - name: Copy utility dotfiles for each user
+      copy:
+        src: "{{ item[1].path }}"
+        dest: "/home/{{ item[0] }}/{{ item[1].path | basename }}"
+        owner: "{{ item[0] }}"
+        group: "{{ item[0] }}"
+        mode: "0644"
+        backup: yes
+      loop: "{{ users | product(dotfiles_found.files) | list }}"

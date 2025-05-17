@@ -4,7 +4,9 @@
   become: yes
   vars:
     ansible_user_name: ansible
-    ansible_ssh_pubkey: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    ssh_key_path: "~/.ssh/id_rsa_ansible.pub"
+    # Password will be undefined by default unless passed at runtime
+    # ansible-playbook playbook.yml -e "ansible_user_password=MySecurePassword"
   tasks:
     - name: Create ansible user
       user:
@@ -12,15 +14,14 @@
         shell: /bin/bash
         state: present
         create_home: yes
-
+        password: "{{ ansible_user_password | password_hash('sha512') if ansible_user_password is defined else omit }}"
     - name: Add SSH key
       authorized_key:
         user: "{{ ansible_user_name }}"
         state: present
-        key: "{{ ansible_ssh_pubkey }}"
-
+        key: "{{ lookup('file', ssh_key_path) }}"
     - name: Allow ansible user passwordless sudo
       copy:
         dest: /etc/sudoers.d/{{ ansible_user_name }}
         content: "{{ ansible_user_name }} ALL=(ALL) NOPASSWD: ALL\n"
-        mode: '0440'
+        mode: "0440"

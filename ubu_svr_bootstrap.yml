@@ -1,0 +1,46 @@
+---
+# Ubuntu Server Update and Package Installation Playbook
+#
+# This playbook performs system updates and installs common packages on Ubuntu servers.
+# Ideal for first-boot configuration or regular maintenance.
+#
+# Run with: ansible-playbook ubuntu_setup.yml
+
+- name: Update and configure Ubuntu servers
+  hosts: all_nodes # Or specify a group like ubuntu_servers
+  become: yes
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600 # Consider cache valid for 1 hour
+
+    - name: Upgrade all packages
+      apt:
+        upgrade: full
+        autoclean: yes
+        autoremove: yes
+
+    - name: Install common packages
+      apt:
+        name:
+          - vim
+          - htop
+          - tmux
+          - git
+          - curl
+          - net-tools
+          # Add more packages as needed
+        state: present
+
+    - name: Restart if required
+      reboot:
+        msg: "Reboot required after system updates"
+        connect_timeout: 5
+        reboot_timeout: 300
+        pre_reboot_delay: 0
+        post_reboot_delay: 30
+        test_command: uptime
+      when: ansible_pkg_mgr == 'apt' and reboot_required_file.stat.exists
+      register: reboot_result
+      # This requires first checking if reboot is needed with a stat task
