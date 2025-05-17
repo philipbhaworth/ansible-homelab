@@ -6,7 +6,7 @@
 
 - name: Deploy personal dotfiles to jump hosts
   hosts: jump
-  become: yes
+  become: true
   vars:
     users:
       - pbh
@@ -15,10 +15,10 @@
       find:
         paths: "{{ playbook_dir }}/files/personal"
         patterns: ".*"
-        hidden: yes
+        hidden: true
       register: dotfiles_found
       delegate_to: localhost
-      become: no
+      become: false
 
     - name: Copy personal dotfiles for each user
       copy:
@@ -27,5 +27,5 @@
         owner: "{{ item[0] }}"
         group: "{{ item[0] }}"
         mode: "0644"
-        backup: yes
+        backup: true
       loop: "{{ users | product(dotfiles_found.files) | list }}"

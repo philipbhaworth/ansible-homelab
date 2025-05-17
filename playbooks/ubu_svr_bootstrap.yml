@@ -5,21 +5,20 @@
 # Ideal for first-boot configuration or regular maintenance.
 #
 # Run with: ansible-playbook ubuntu_setup.yml
-
 - name: Update and configure Ubuntu servers
   hosts: all_nodes # Or specify a group like ubuntu_servers
-  become: yes
+  become: true
   tasks:
     - name: Update apt cache
       apt:
-        update_cache: yes
+        update_cache: true
         cache_valid_time: 3600 # Consider cache valid for 1 hour
 
     - name: Upgrade all packages
       apt:
         upgrade: full
-        autoclean: yes
-        autoremove: yes
+        autoclean: true
+        autoremove: true
 
     - name: Install common packages
       apt:
@@ -29,9 +28,13 @@
           - tmux
           - git
           - curl
-          - net-tools
           # Add more packages as needed
         state: present
+
+    - name: Check if reboot is required
+      stat:
+        path: /var/run/reboot-required
+      register: reboot_required_file
 
     - name: Restart if required
       reboot:
@@ -43,4 +46,3 @@
         test_command: uptime
       when: ansible_pkg_mgr == 'apt' and reboot_required_file.stat.exists
       register: reboot_result
-      # This requires first checking if reboot is needed with a stat task

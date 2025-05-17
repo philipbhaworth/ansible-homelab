@@ -6,7 +6,7 @@
 
 - name: Deploy utility dotfiles to worker nodes
   hosts: k8_dev_nodes:k8_prod_nodes
-  become: yes
+  become: true
   vars:
     users:
       - pbh
@@ -16,10 +16,10 @@
       find:
         paths: "{{ playbook_dir }}/files/utility"
         patterns: ".*"
-        hidden: yes
+        hidden: true
       register: dotfiles_found
       delegate_to: localhost
-      become: no
+      become: false
 
     - name: Copy utility dotfiles for each user
       copy:
@@ -28,5 +28,5 @@
         owner: "{{ item[0] }}"
         group: "{{ item[0] }}"
         mode: "0644"
-        backup: yes
+        backup: true
       loop: "{{ users | product(dotfiles_found.files) | list }}"
