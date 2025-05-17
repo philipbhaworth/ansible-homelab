@@ -14,7 +14,7 @@
   tasks:
     - name: Find all dotfiles in utility directory
       find:
-        paths: "{{ playbook_dir }}/files/utility"
+        paths: "{{ playbook_dir }}/../files/utility"
         patterns: ".*"
         hidden: true
       register: dotfiles_found
@@ -30,3 +30,4 @@
         mode: "0644"
         backup: true
       loop: "{{ users | product(dotfiles_found.files) | list }}"
+      when: dotfiles_found.files | length > 0
