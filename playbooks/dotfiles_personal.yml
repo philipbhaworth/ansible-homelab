@@ -13,7 +13,7 @@
   tasks:
     - name: Find all dotfiles in personal directory
       find:
-        paths: "{{ playbook_dir }}/files/personal"
+        paths: "{{ inventory_dir }}/files/personal"
         patterns: ".*"
         hidden: true
       register: dotfiles_found
