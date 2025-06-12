@@ -4,8 +4,8 @@
 # Deploys personalized dotfiles to jump hosts
 # Contains full-featured configuration for interactive work
 
-- name: Deploy personal dotfiles to jump hosts
-  hosts: jump
+- name: Deploy personal dotfiles to infra hosts
+  hosts: infra
   become: true
   vars:
     users:
