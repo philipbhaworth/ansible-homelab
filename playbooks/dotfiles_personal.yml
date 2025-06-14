@@ -4,8 +4,8 @@
 # Deploys personalized dotfiles to jump hosts
 # Contains full-featured configuration for interactive work
 
-- name: Deploy personal dotfiles to infra hosts
-  hosts: infra
+- name: Deploy personal dotfiles to pi_omv hosts
+  hosts: pi_omv
   become: true
   vars:
     users:
