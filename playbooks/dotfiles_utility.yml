@@ -4,8 +4,8 @@
 # Deploys minimal dotfiles to utility/worker nodes
 # Contains streamlined configuration for maintenance tasks
 
-- name: Deploy utility dotfiles to worker nodes
-  hosts: k8_dev_nodes:k8_prod_nodes
+- name: Deploy utility dotfiles to all_nodes
+  hosts: all_nodes
   become: true
   vars:
     users:
