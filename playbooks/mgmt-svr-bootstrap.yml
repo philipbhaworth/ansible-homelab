@@ -1,0 +1,9 @@
+- name: Bootstrap mgmt host
+  hosts: leapanardo
+  become: yes
+  roles:
+    - core_tools
+    - devops_tools
+    - modern_cli
+    - containers
+    - k8s
